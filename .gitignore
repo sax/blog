@@ -1,4 +1,5 @@
 _site
+_jekyll_s3.yml
 .sass-cache
 
 # ignore compiled compass assets
