@@ -8,6 +8,7 @@ body {
   }
 
   h1, h2, h3 {  
+    font-family: 'EB Garamond', 'Helvetica Neue', Helvetica, Arial, sans-serif;
     a {
       color: $textColor;
 
@@ -24,7 +25,9 @@ body {
 
   .date {
     @include inline-block;
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
     font-size: 11px;
+    font-weight: normal;
     padding-left: 10px;
     margin-bottom: -1px;
     color: $dateColor;
