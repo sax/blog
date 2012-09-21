@@ -10,7 +10,8 @@ title: imagining the future
     <span class="date">{{ post.date | date_to_string }}</span>
   </h3>
   <div class="content">
-    {{ post.content }}
+    {{ post.content | extract_excerpt }}
+    {{ post.content | ellipses }}
   </div>
 </div>
 {% endfor %}
