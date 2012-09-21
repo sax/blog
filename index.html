@@ -11,7 +11,7 @@ title: imagining the future
   </h3>
   <div class="content">
     {{ post.content | extract_excerpt }}
-    {{ post.content | ellipses }}
+    <a href="{{ post.url }}">{{ post.content | ellipses }}</a>
   </div>
 </div>
 {% endfor %}

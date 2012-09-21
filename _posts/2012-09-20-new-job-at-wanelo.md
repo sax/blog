@@ -3,14 +3,17 @@ layout: post
 ---
 
 <article>
-I have made the move. Starting Monday I'm going to be working at Wanelo,
+I have made the move. Starting Monday I'm going to be working at 
+<a href="http://wanelo.com">Wanelo</a>,
 a social media startup working on connecting people with e-commerce.
 It's an interesting change for me, as two years ago I promised myself I
 would never work for a social network company. A lot has changed in the
 last two years, however, and I thought I would take some time to put it
 down in words (for my own benefit as well as yours, illustrious reader).
 
-For the past two years I have worked at ModCloth, an e-commerce fashion
+For the past two years I have worked at 
+<a href="http://www.modcloth.com">ModCloth</a>, 
+an e-commerce fashion
 company that works with small-medium sized fashion designers to sell
 vintage-inspired clothing. In the course of my time there, I worked on
 various features including Be the Buyer, a program to crowd-source
