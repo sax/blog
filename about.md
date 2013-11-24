@@ -18,3 +18,8 @@ I written recursive shell scripts to transform large amounts of data
 into HTML via XSLT. I have shown art at several galleries, and at one
 point I tried to write and illustrate a graphic novel. More recently I
 have written web applications and system automation using various frameworks.
+
+Things that I care about in my professional career: testing,
+refactoring, transparency, object orientation, repeatability,
+distributed applications, observability. I succeed at some more than
+others.
