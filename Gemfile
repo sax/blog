@@ -3,9 +3,7 @@ source "http://rubygems.org"
 
 gem 'bundler'
 gem 'jekyll'
-gem 'jekyll-s3'
-
-gem 'haml'
+gem 's3_website'
 
 gem 'compass'
 gem 'bootstrap-sass'

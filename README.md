@@ -3,16 +3,26 @@
 This is the blog for livinginthepast.org. It is built using jekyll and
 compass.
 
+## Development
+
+```bash
+bundle exec jekyll serve
+```
+
+Changes will require the server to be restarted.
+
 ## Deployment
 
 Deployment credentials are not checked into the repository (for various
 reasons, including the desire to keep it a public repo).
 
 ```bash
-bundle
-jekyll-s3
+bundle exec compass compile
+bundle exec jekyll build
+```
 
-## edit _jekyll_s3.yml with proper credentials
+Configure `s3_website` using `s3_website.yml`
 
-jekyll-s3
+```bash
+s3_website push
 ```
