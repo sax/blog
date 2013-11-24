@@ -45,7 +45,7 @@ RSpec.configure do |config|
 end
 ```
 
-This uses RSpec’s built-in transactional test wrapping for non-js tests. For our capybara-webkit tests, DatabaseCleaner is used with a :truncation strategy. This keeps the majority of tests transactional and fast, while allowing us to truncate before javascript tests.
+This uses RSpec’s built-in transactional test wrapping for non-js tests. For our capybara-webkit tests, DatabaseCleaner is used with a `:truncation` strategy. This keeps the majority of tests transactional and fast, while allowing us to truncate before javascript tests.
 
 We spent much longer than I’d like to admit struggling over test failures. These failures showed up in FactoryGirl, where it would throw confusing ActiveRecord::NotFound exceptions sometimes. Once we ensured that ActiveRecord re-establishes its connection when switching between cleaning strategies, everything started working!
 
@@ -67,8 +67,8 @@ The lesson that I take away from this is that cheap incremental upgrades are alw
 
 One major gain that this process has given us us is a deep review of each of our javascript tests. In several cases, we’ve found that the tests do not require javascript or CSS to complete. While tempting to convert them to capybara-webkit and move on, we found that it was often faster to re-implement them as controller specs. This has many up-sides.
 
-   * Controller specs are transactional, and thus run faster
-   * We can stub service classes in controller specs. This allows us to move functionality out of controllers and into classes that we can unit test to death in ways that run even faster than controller specs.
+* Controller specs are transactional, and thus run faster
+* We can stub service classes in controller specs. This allows us to move functionality out of controllers and into classes that we can unit test to death in ways that run even faster than controller specs.
 
 This leaves capybara-webkit specs as a small set of tests that cover the important things that unit tests won’t give us full confidence in.
 
