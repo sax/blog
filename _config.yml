@@ -3,7 +3,7 @@ auto:        true
 lsi:         false
 server_port: 4000
 pygments:    false
-markdown:    maruku
+markdown:    redcarpet
 paginate:    10
 exclude:
   - config.rb
