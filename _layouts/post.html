@@ -19,12 +19,11 @@
   {% include menu.html %}
 
   <div class="container">
-    <h1><a href="/">Living in the Past</a></h1>
     <div class="post">
-      <h2>
+      <h1>
         {{ page.title }}
         <span class="date">{{ page.date | date_to_string }}</span>
-      </h2>
+      </h1>
       {{ content }}
     </div>
   </div>
