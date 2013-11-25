@@ -5,12 +5,13 @@ published: true
 ---
 
 <article>
-MRI Ruby has a global interpreter lock (GIL), meaning that even when
-writing multi-threaded Ruby only a single thread can be on-CPU at any
-given point in time. Other distributions of Ruby have done away with the
-GIL, but even in MRI threads can be useful. The Sidekiq background
-worker gem takes advantage of this, running multiple workers in separate
-threads within a single process.
+MRI Ruby has a [global interpreter
+lock](http://en.wikipedia.org/wiki/Global_Interpreter_Lock) (GIL),
+meaning that even when writing multi-threaded Ruby only a single thread
+can be on-CPU at any given point in time. Other distributions of Ruby
+have done away with the GIL, but even in MRI threads can be useful. The
+Sidekiq background worker gem takes advantage of this, running multiple
+workers in separate threads within a single process.
 
 If the workload of a job blocks on I/O, Ruby can context switch to other
 threads and do other work until the I/O finishes. This could be because
