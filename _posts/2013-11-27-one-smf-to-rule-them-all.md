@@ -8,7 +8,7 @@ published: true
 Over the past few years I've become a big fan of
 [SmartOS](http://smartos.org), a distribution of
 [Illumos](http://wiki.illumos.org/display/illumos/illumos+Home) built
-specifically with cloud management in mind. One of the features it
+specifically with cloud IaaS in mind. One of the features it
 inherits from Solaris is the [Service Management
 Facility](http://en.wikipedia.org/wiki/Service_Management_Facility),
 SMF. For various reasons, SMF is my service management framework of
@@ -23,6 +23,7 @@ stop or restart many services at once.
 </article>
 
 ## Some backstory
+
 We use [Sidekiq](https://github.com/mperham/sidekiq) to process tasks
 spawned from our various applications in an asynchronous manner. Sidekiq
 works like Resque, except for the fact that it uses the Celluloid gem to
@@ -32,7 +33,7 @@ block on I/O, such as external API calls or network calls, but that
 non-blocking ruby jobs perform better with multiple processes. We use
 MRI ruby, which still suffers from a global interpreter lock (GIL) on
 threads and thus only runs one thread at a time. (See: [Threads in a
-GIL]())
+GIL]({% post_url 2013-11-25-threads-in-a-gil %}))
 
 Over time as our site has grown in features and in traffic, our Sidekiq
 deployment has grown more complex. Multiple groups of processes are
