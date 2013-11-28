@@ -5,10 +5,10 @@ title: imagining the future
 
 {% for post in paginator.posts %}
 <div class="post">
-  <h3>
+  <h2>
     <a href="{{ post.url }}">{{ post.title }}</a>
     <span class="date">{{ post.date | date_to_string }}</span>
-  </h3>
+  </h2>
   <div class="content">
     {{ post.content | extract_excerpt }}
     <a href="{{ post.url }}">{{ post.content | ellipses }}</a>

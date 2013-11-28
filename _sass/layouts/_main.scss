@@ -1,5 +1,6 @@
 body {
   padding: 60px;
+  line-height: 1.5;
   -webkit-font-smoothing: antialiased;
 
   h1 {
@@ -8,10 +9,20 @@ body {
     padding-bottom: 10px;
   }
 
+  h2 {
+    margin: 12px 0;
+  }
+
   h1, h2, h3 {  
     font-family: 'EB Garamond', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+
+    span {
+      margin-right: 10px;
+    }
+
     a {
       color: $textColor;
+      margin-right: 10px;
 
       &:hover {
         color: $textHighlightColor;
@@ -22,15 +33,14 @@ body {
 }
 
 .post {
-  margin-bottom: 60px;
+  margin-bottom: 50px;
 
   .date {
-    @include inline-block;
+    display: inline-block;
+    line-height: 1;
     font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
     font-size: 11px;
     font-weight: normal;
-    padding-left: 10px;
-    margin-bottom: -5px;
     color: $dateColor;
   }
 }
