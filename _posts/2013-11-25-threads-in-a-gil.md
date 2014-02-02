@@ -13,16 +13,16 @@ have done away with the GIL, but even in MRI threads can be useful. The
 Sidekiq background worker gem takes advantage of this, running multiple
 workers in separate threads within a single process.
 
-If the workload of a job blocks on I/O, Ruby can context switch to other
-threads and do other work until the I/O finishes. This could be because
-the workload reaches out to an external API, shells out to another
-command, does a lot of network requests, or any number of other reasons.
-Depending on how a job is written, writes to external storage like an NFS
-server could block on I/O and benefit from context switching.
+If the workload of a job blocks on I/O, Ruby can context-switch to other 
+threads and do other work until the I/O finishes. This could happen when 
+the workload reaches out to an external API, shells out to another command, 
+or is accessing the file system. Depending on how a job is written, writes 
+to external storage like an NFS server could block on I/O.
 
-Conversely, if a process does not block on I/O, it will not benefit
-from thread switching under a GIL. Instead, multiple processes will be
-more efficient.
+If the workload of a process does not block on I/O, it will not benefit 
+from thread switching under a GIL, as it will be, instead, CPU-bound. In 
+this case, multiple processes will be more efficient, and will be able to 
+take better advantage of multi-core systems.
 
 So… why not skip threads and just deal with processes? A number of
 reasons.
@@ -77,11 +77,13 @@ first thread finishes.
 Sometimes a workload will purposefully block, for instance in a daemon
 process that only wakes up every N seconds to do work. The 
 [spanx](https://github.com/wanelo/spanx) gem works this way, with multiple
-actors in separate threads. Since each actor spends most of its time
-idle, it's simpler from an operational point of view to manage a single
-process than to write code around keeping multiple processes alive in a
-single service definition, or writing separate SMF services for each
-actor. It's much less confusing to type "svcadm disable spanx-watcher"
-when there's a problem than to track down four services to stop them
-all.
+actors in separate threads. 
+
+It's much easier to manage a single process daemon, from an operational point of
+view, than a set of daemons. In SmartOS this means that the SMF definition for
+the service does not have to manage multiple processes. Additionally this
+prevents a situation where one actor may not start, which might happen with
+multi-process design. It's much less confusing to type "svcadm disable
+spanx-watcher" when there's a problem, than to track down four separate services
+in order to stop them all.
 
