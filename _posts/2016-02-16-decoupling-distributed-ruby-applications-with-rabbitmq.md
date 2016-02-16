@@ -20,9 +20,7 @@ seems... dangerous.
 
 Fortunately "Danger" is our middle name at Wanelo. (Actually, our middle name is "Action." Wanelo Action Jackson). 
 Having now developed using a messaging infrastructure for almost a year and a half, I would no longer develop 
-applications in any other way.
-
-</article>
+applications in any other way.</article>
 
 ## Asynchronous work vs. decoupled messaging
 
