@@ -5,6 +5,7 @@ title: Projects
 
 ## Projects
 
+* [Lapine](https://github.com/messagebus/lapine)
 * [Rails DTrace](https://github.com/sax/rails-dtrace)
 * [Fake FTP](https://github.com/livinginthepast/fake_ftp)
 
