@@ -3,8 +3,11 @@ layout: post
 title: "Decoupling Distributed Ruby applications with RabbitMQ"
 author: Eric Saxby
 author_username: sax
-published: false
+published: true
 ---
+
+**Note that this is a repost of an article written for the [Wanelo blog](http://building.wanelo.com). Take a look there
+for other great content.**
 
 <article>
 
@@ -262,3 +265,14 @@ payload even make sense without it?
 
 Note that this concern also applies to naming of RESTful API endpoints and webhook payloads. Inconsistent naming not 
 only wastes your time, it can waste the time of other products consuming data from your services.
+
+
+## Lapine
+
+All of these opinions and learnings are consolidated into a gem that we
+have named [Lapine](https://github.com/messagebus/lapine). Take a look,
+and try it out.
+
+
+*Thank you to Tori Scallan and James Hart for help and editing of this
+blog post, and to Matt Camuto for helping to make Lapine a reality.*
