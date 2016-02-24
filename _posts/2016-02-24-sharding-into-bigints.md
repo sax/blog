@@ -48,6 +48,9 @@ Our `database.yml` looks something like this:
 
 We have evaluated two major solutions for generating unique identifiers in a sharded application. The first, Snowflake, is a technology developed by Twitter. There is a major problem with many technologies open sourced by Twitter, however—they often to have open-source and closed-source versions, with the open code months or years behind the private repositories. There are exceptions to this rule (thank you Manju!), but unfortunately Snowflake is not one of them (at the time of this writing). Another issue is that, even if we were to accept the age of the codebase (and anecdotal knowledge of closed-source bug fixes that we’d be missing), or were able to find or develop a Snowflake alternative (at the time of writing, no open-source Snowflake alternatives claim to be production-ready), choosing Snowflake adds a complicated distributed dependency to our application.
 
+Update: turns out Snowflake itself has been retired from Github, with no
+timeline on a replacement becoming available.
+
 The second solution we identified was developed by Instagram, and uses Postgres itself to generate unique identifiers with plsql functions. As we already use and depend on Postgres, we felt that this was a better fit for our use case. It can be found at http://instagram-engineering.tumblr.com/post/10853187575/sharding-ids-at-instagram.
 
 ...
