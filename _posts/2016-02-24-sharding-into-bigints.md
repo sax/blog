@@ -51,7 +51,7 @@ We have evaluated two major solutions for generating unique identifiers in a sha
 Update: turns out Snowflake itself has been retired from Github, with no
 timeline on a replacement becoming available.
 
-The second solution we identified was developed by Instagram, and uses Postgres itself to generate unique identifiers with plsql functions. As we already use and depend on Postgres, we felt that this was a better fit for our use case. It can be found at http://instagram-engineering.tumblr.com/post/10853187575/sharding-ids-at-instagram.
+The second solution we identified was developed by Instagram, and uses Postgres itself to generate unique identifiers with plsql functions. As we already use and depend on Postgres, we felt that this was a better fit for our use case. It can be found at [http://instagram-engineering.tumblr.com/post/10853187575/sharding-ids-at-instagram](http://instagram-engineering.tumblr.com/post/10853187575/sharding-ids-at-instagram).
 
 ...
 
