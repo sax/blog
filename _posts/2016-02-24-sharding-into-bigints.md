@@ -3,9 +3,10 @@ layout: post
 title: "Sharding into big integers"
 author: Eric Saxby
 author_username: sax
-published: false
+published: true
 ---
 
+<article>
 One day you wake up, you grab your laptop, you open your email, you see a strange alert, and you open up your exception tracking service. There you see the following text.
 
 ```
@@ -13,8 +14,6 @@ ActiveRecord::StatementInvalid: PG::NumericValueOutOfRange: ERROR: integer out o
 ```
 
 You then close your laptop and climb back into bed. If anyone asks later, you never saw that message. What even is computer?
-
-## Id generation in Rails
 
 By default when Rails migrations create id columns in Postgres, it uses the `serial primary field` native type, an `integer`. When reference columns are specified, Rails uses an `integer`. The range of numbers covered by the integer numeric type in Postgres is:
 
@@ -32,43 +31,18 @@ For most datasets, integers are more than enough for the id space of most tables
 
 This turned out to be a very insidious and unexpected bug, which was particularly interesting to me because of where we have **not** run into integer overflows in the past. We have services with more than three billion records in a single table space. In those applications we have sharded the data heavily, using thousands of Postgres schemas as logical shards across a set of database zones. Because of the nature of that data, however, we were able to generate unique identifiers for each row based on the data in the row, in the form of base62 encoded strings. Doing so allowed us to shard data without having to worry about unique identifier generation—as a side effect, it completely obviated the possibility of integer overflow errors.
 
-The second case where we have had to migrate from integers to bigints was another scalability project. In order to scale writes to one of our internal Rails applications, we decided to split the entire database into multiple shards. The upside was that this was quite easy to do using the Multidb gem; Multidb does not natively do everything we need, but the code is extremely simple, readable, and the missing bits were easy for us to fill in ourselves. The downside was that in order to do this sharding, we needed to generate unique ids across shards.
+The second case where we have had to migrate from integers to bigints was another scalability project. In order to scale writes to one of our internal Rails applications, we decided to split the entire database into multiple shards. The upside was that this was quite easy to do using the Multidb gem; Multidb does not natively do everything we need, but the code is extremely simple, readable, and the missing bits were easy for us to fill in ourselves. The downside was that in order to do this sharding, we needed to generate unique ids across shards.</article>
 
 ## Multidb
 
 I won't spend much time discussing the changes needed to fill in the gaps with Multidb. Suffice it to say that we needed to do some work to ensure that queries are thread safe, and we needed to ensure that migrations run on all shards. This latter part is slightly more tricky than one might think, as it needs to not only support new migrations, but it needs to support running all old migrations on a new shard.
 
-<script src="https://gist.github.com/sax/1dcaacab2b0068f132a8.js"></script>
+<script src="https://gist.github.com/sax/1dcaacab2b0068f132a8.js?file=multidb.rb"></script>
 
 Our `database.yml` looks something like this:
 
-```yaml
-common: &common
-  adapter: postgresql
-  host: 127.0.0.1
-  port: 5432
-  username: *******
-  password: *******
-  encoding: unicode
-  pool: 20
-  min_messages: WARNING
-  schema_search_path: public
-  multidb:
-    fallback: false
-    databases:
-      stuff:
-        schema_search_path: stuff
-      things:
-        schema_search_path: things
+<script src="https://gist.github.com/sax/1dcaacab2b0068f132a8.js?file=database.yml"></script>
 
-development: &dev
-  <<: *common
-  database: development
-
-test: &test
-  <<: *common
-  database: test
-```
 
 ## Distributed id generation
 
@@ -80,52 +54,11 @@ The second solution we identified was developed by Instagram, and uses Postgres 
 
 The plsql functions we used to generate unique identifiers are very slightly different from the code presented by Instagram in their blog post:
 
-```sql
-execute <<-EOSQL
+<script src="https://gist.github.com/sax/29d624603f5504fd91af.js?file=psql.rb"></script>
 
-CREATE SEQUENCE #{schema}.id_generator_seq;
+When we run cross-shard migrations, we iterate through every available Multidb connection, where we set the `schema_search_path`. With this information, we can look up manual configuration from a settings file in order to interpolate variables for the specific shard:
 
-CREATE OR REPLACE FUNCTION #{schema}.current_shard_id(OUT result int) AS $$
-BEGIN
-  result := #{shard_id};
-END;
-$$ LANGUAGE PLPGSQL;
-
-CREATE OR REPLACE FUNCTION #{schema}.id_generator(OUT result bigint) AS $$
-DECLARE
-    our_epoch bigint := 1433806952013;
-    seq_id bigint;
-    now_millis bigint;
-    shard_id int;
-BEGIN
-    SELECT #{schema}.current_shard_id() into shard_id;
-    SELECT nextval('#{schema}.id_generator_seq') % 1024 INTO seq_id;
-
-    SELECT FLOOR(EXTRACT(EPOCH FROM clock_timestamp()) * 1000) INTO now_millis;
-    result := (now_millis - our_epoch) << 23;
-    result := result | (shard_id << 10);
-    result := result | (seq_id);
-END;
-$$ LANGUAGE PLPGSQL;
-
-EOSQL
-```
-
-When we run cross-shard migrations, we iterate through every available Multidb connection, where we set the `schema_search_path`. With this information, we can look up manual configuration from a settings file:
-
-```ruby
-## Settings
-#  shards:
-#    default:
-#      schema: public
-#      shard_id: 0
-#    other_shard:
-#      schema: shard1
-#      shard_id: 1
-schema = ActiveRecord::Base.connection.instance_variable_get(:@config)[:schema_search_path]
-shard_entry = Settings.shards.values.find { |v| v['schema'] == schema }
-shard_id = shard_entry['shard_id']
-```
+<script src="https://gist.github.com/sax/29d624603f5504fd91af.js?file=variables.rb"></script>
 
 The specific ways in which this is different from the Instagram examples are as follows:
 
@@ -152,31 +85,7 @@ The worst thing about this algorithm is that it requires id columns to be 8 byte
 
 When creating new tables, we don’t want to have to remember to use bigints in migrations. Fortunately for us, a very simple monkey patch solves the problem.
 
-```ruby
-# https://gist.github.com/sax/cc6ebf1805e732112134
-require 'active_record/connection_adapters/postgresql_adapter'
-
-module ActiveRecord
-  module ConnectionAdapters
-    class TableDefinition
-      def references(*args)
-        options = args.extract_options!
-        polymorphic = options.delete(:polymorphic)
-        index_options = options.delete(:index)
-        args.each do |col|
-          column("#{col}_id", :bigint, options)
-          column("#{col}_type", :string, polymorphic.is_a?(Hash) ? polymorphic : options) if polymorphic
-          index(polymorphic ? %w(id type).map { |t| "#{col}_#{t}" } : "#{col}_id", index_options.is_a?(Hash) ? index_options : {}) if index_options
-        end
-      end
-    end
-
-    class PostgreSQLAdapter < AbstractAdapter
-      NATIVE_DATABASE_TYPES[:primary_key] = ‘bigserial primary key'
-    end
-  end
-end
-```
+<script src="https://gist.github.com/sax/cc6ebf1805e732112134.js"></script>
 
 We were able to make this change immediately, since it could't hurt anything. It also allowed us to verify in development environments that nothing would break. After we had migrated the data and were ready to roll out the sharding code, the last monkey patch changed to `bigint default id_generator() not null primary key`.
 
@@ -240,6 +149,25 @@ One thing that we noticed when trying to apply Depesz’s solution to our proble
 * Recreate foreign keys with parallelism equal to number of tables
 
 With parallelism equal to 1.5 times the number of available cores in the database system, we were able to export all of the data in 12 minutes. After several false starts and fixes, we were able to get the data import down to 18 minutes. Recreating the primary keys and adding back in the non-foreign key indices took around 40 minutes. Unfortunately I was not able to get a timeline of reimporting the foreign key constraints, but the speed of the other steps allowed for a huge window in which to run the last step. This application can tolerate downtimes of multiple hours.
+
+The script we used to dump all data and reload it can be found in the following gist:
+
+<script src="https://gist.github.com/sax/f7e59f6d677108aac010.js?file=migrate_to_bigints.sh"></script>
+
+Note that this assumes foreign keys have already been removed, and are then manually added back after the fact. Note also that this does not backup the current schema, nor does it make changes to any of the dumped files. Those steps were done manually. In addition, this script dumps all indices into a single file. In order to improve index creation performance, we manually split this file into many small files, so that we could control the concurrency of primary and non-primary index creation.
+
+The script was used as follows:
+
+```bash
+migrate_to_bigints.sh --dump -d <database> -e <export-path> -U <postgres-user>
+# rename public schema
+# create new, empty public schema
+# update structure.sql to change necessary columns to bigint
+# split index file
+migrate_to_bigints.sh --load -d <database> -e <export-path> -U <postgres-user>
+# use find | xargs to import indices
+```
+
 
 ## Surprises
 
