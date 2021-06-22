@@ -1,5 +1,7 @@
 ## livinginthepast.org
 
+**Archived in favor of [litp.org](https://github.com/livinginthepast/litp.org)**
+
 This is the blog for livinginthepast.org. It is built using jekyll and
 compass.
 
